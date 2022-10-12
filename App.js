@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { SafeAreaView, View, Text, Button, Platform } from "react-native";
+import { SafeAreaView, View, Text, Button, Platform, StyleSheet } from "react-native";
 import { FileSystem, Dirs } from "react-native-file-access";
 
 const App = () => {
@@ -15,6 +15,7 @@ const App = () => {
   const handleBtnPress = () => {
     console.log('Button press');
 
+    const fileUrl = `${Dirs.DocumentDir}/sample_file.png`;
     const wss = new WebSocket("ws://192.168.1.6:8989");
     wss.binaryType = "blob";
     wss.onmessage = (evt) => {
@@ -24,9 +25,9 @@ const App = () => {
         const fr = new FileReader();
         fr.readAsDataURL(evt.data);
         fr.onload = async () => {
-          const fileUrl = `${Dirs.DocumentDir}/sample_file.tmp`;
+
           const data = fr.result.split('base64,')[1];
-          
+
           await FileSystem.appendFile(fileUrl, data, 'base64')
             .then(() => {
               console.log(`Saved file: ${fileUrl}`);
@@ -66,10 +67,18 @@ const App = () => {
       <View>
         <Text>Chat Client</Text>
         <Text>Status: { isConnected ? 'Connected':'Disconnected' }</Text>
-        <Button title="Connect to Server" onPress={() => handleBtnPress() }/>
+        <Button title="Connect to Server" onPress={() => handleBtnPress() } style={ styles.btnConnect }/>
       </View>
     </SafeAreaView>
   );
 };
+
+const styles = StyleSheet.create({
+  btnConnect: {
+    padding: 10,
+    marginTop: 40,
+    fontSize: 14
+  }
+});
 
 export default App;
